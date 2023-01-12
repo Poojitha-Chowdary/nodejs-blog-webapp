@@ -1,0 +1,9 @@
+{
+    "host": "localhost",
+    "port": 3000,
+
+    "mongo_db_url": "mongodb://localhost:27017",
+    "mongo_db_url2": "mongodb+srv://myUserName:MyPassword@ElasticIP:27017/databaseName?retryWrites=true&w=majority&authSource=admin",
+    "blogs_db_name": "BlogsDb"
+
+}

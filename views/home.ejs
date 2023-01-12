@@ -1,0 +1,33 @@
+<%- include('partials/header'); -%>
+
+<h1>Recent Articles</h1>
+
+<form action="/search" method="post" class="">
+    <div class="form-group">
+        <input type="text" name="searchText" class="form-control" placeholder="Type text and hit Enter to Search">
+    </div>
+</form>
+
+<% if (posts !== null || posts.length !== 0) {
+    posts.forEach(function(element) { %>
+    <div class="blogTitle"><%= element.title %>
+        <% 
+        const ratingAmount = 3;
+        for (let i=0; i < ratingAmount; i++) { %>
+            <span class="starRating">★</span>
+        <% } 
+        for (let i=0; i < 5 - ratingAmount; i++) { %>
+            <span class="starRating">☆</span>
+        <% } %>
+        <span><b><%= element.timestamp %></b></span>
+        <span>Posted by <b><%= element.author %></b> on </span>
+    </div>
+    <div class="blogContent">
+    <!-- <p> -->
+        <%= element.content.substring(0, 125); %>
+        <a href="/posts/<%= element.id %>">...read more</a>
+    <!-- </p> -->
+    </div>
+<% }); } %>
+
+<%- include('partials/footer'); -%>

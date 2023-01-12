@@ -1,0 +1,80 @@
+<%- include('partials/header'); -%>
+<br/>
+<a href="/"> << Go back home</a>
+
+<% posts.forEach(function(post) { %>
+
+    <% if (post.title === '') { %>
+        <div class="blogTitle">No data found!</div>
+    <% } else { %>
+        <div class="blogTitle">
+            <%= post.title %>
+            <% 
+            const ratingAmount = 3;
+            for (let i=0; i < ratingAmount; i++) { %>
+                <span class="starRating">★</span>
+            <% } 
+            for (let i=0; i < 5 - ratingAmount; i++) { %>
+                <span class="starRating">☆</span>
+            <% } %>
+            <span><b><%= post.timestamp %></b></span>
+            <span>Posted by <b><%= post.author %></b> on </span>
+        </div>
+        <div class="blogContent">
+            <%= post.content; %>
+        </div>
+        <div class="contentSource">Overall rating: 
+            <% if(post.overallRating === '' || post.overallRating === 0) { %>
+                No ratings available!
+            <% } else { %>
+                <%= post.overallRating %>
+            <% } %>
+        </div>
+        <div class="contentSource">
+            Sourced from (citations): <%= post.contentSource %>
+        </div>
+        <div class="contentSource">
+            <% if(post.tags || post.tags == null || post.tags === '') { %>
+                No tags!
+            <% } else { %>
+                <%= post.tags %>
+            <% } %>
+        </div>
+        <div class="blogTitle">
+            Reviews
+        </div>
+        
+        <% if (post.reviews != null && post.reviews.length != 0) { %>
+            <% post.reviews.forEach( function(review) { %>
+                <% if(review.approval ==='approved') { %>
+                    <div class="blogContent">
+                        <span><%= review.author %></span>
+                        <% for(let i=0; i < review.rating; i++) { %>
+                            <span class="starRating">★</span>
+                        <% } 
+                        for (let i=0; i < 5 - review.rating; i++) { %>
+                            <span class="starRating">☆</span>
+                        <% } %>
+                        <div><%= review.comment %></div>
+                        <br/>
+                    </div>
+                <% } else {%>
+                    <div class="blogContent">
+                        Review hidden (yet to be published).
+                    </div>
+                    <br/>
+                <% }%>
+            <% }); %>
+        <% } else { %>
+            <div class="blogContent">
+                No reviews available.
+            </div>
+        <% } %>
+
+    <% } %>
+<% }); %>
+
+<!-- <h1><%= posts.title %></h1>
+<p><%= posts.content %></p> -->
+
+<%- include('partials/footer'); -%>

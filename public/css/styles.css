@@ -1,0 +1,70 @@
+html {
+    min-height: 100%;
+    position: relative;
+}
+.container-fluid {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+.navbar {
+    padding-top: 15px;
+    padding-bottom: 15px;
+    border: 0;
+    border-radius: 0;
+    margin-bottom: 0;
+    font-size: large;
+    letter-spacing: 5px;
+}
+.navbar-nav li a:hover {
+    color: #1abc9c !important;
+}
+.footer-padding {
+    /* padding-top: 60px; */
+    padding-bottom: 100px;
+}
+.footer {
+    position: absolute;
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #1abc9c;
+}
+.footer p {
+    margin-top: 15px;
+    font-size: 18px;
+    color: #fff;
+}
+.blogTitle {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    font-weight: bold;
+    font-size: x-large;
+}
+.blogTitle .starRating {
+    color: orange;
+    margin: 0px;
+    float: none !important;
+}
+.blogTitle span {
+    float: right;
+    margin-left: 10px;
+    margin-top: 10px;
+    font-weight: normal !important;
+    font-size: medium !important;
+}
+.ratingAmount {
+    margin-left: 10px;
+}
+.contentSource {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: normal;
+    font-size: small;
+}
+.blogContent {
+    font-weight: normal;
+    font-size: medium;
+}
