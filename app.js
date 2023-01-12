@@ -141,14 +141,20 @@ app.post('/compose', (req, res) => {
     res.redirect('/');
 });
 
-app.get('/posts/:postId', (req, res) => {
-    Blog.findOne({_id: req.params.postId}, (err, blogs) => {
+/**
+ * Search blog matching given _id, maximum "one" blog retrieved.
+ */
+app.get('/posts/:id', (req, res) => {
+    Blog.findOne({_id: req.params.id}, (err, blogs) => {
         if(err) {
-            console.log('Some error occurred: ' + err)
+            console.log(`Some error occurred: ${err}`);
             res.render('post', { posts: []});
+        } else if(blogs !== null) {
+            console.log(`Blog found matching _id ${req.params.id}`);
+            res.render('post', { posts: [blogs]});
         } else {
-            console.log(blogs.length + ' Blog found');
-            res.render('post', { posts: blogs});
+            console.log(`No blog found matching _id ${req.params.id}`);
+            res.render('post', { posts: []});
         }
     });
 });
