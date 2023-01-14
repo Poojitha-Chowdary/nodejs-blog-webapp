@@ -79,14 +79,16 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static('public'));
 
+let displaySomeMessage = '';
+
 app.get('/', (req, res) => {
     Blog.find((err, blogs) => {
         if(err) {
-            console.log('Some error occurred while finding: ' + err)
-            res.render('home', {posts: []});
+            console.log(`Some error occurred while finding: ${err}`)
+            res.render('home', {posts: [], searchText: '', displaySomeMessage: `Some error occurred while finding: ${err}`});
         } else {
-            console.log(blogs.length + ' blog(s) found (Home page).')
-            res.render('home', {posts: blogs});
+            console.log(`${blogs.length} blog(s) found (Home page).`)
+            res.render('home', {posts: blogs, searchText: '', displaySomeMessage: `${blogs.length} blog(s) found`});
         }
     });
 });
@@ -149,34 +151,56 @@ app.get('/posts/:id', (req, res) => {
         if(err) {
             console.log(`Some error occurred: ${err}`);
             res.render('post', { posts: []});
-        } else if(blogs !== null) {
-            console.log(`Blog found matching _id ${req.params.id}`);
-            res.render('post', { posts: [blogs]});
-        } else {
+        } else if(blogs === null) {
             console.log(`No blog found matching _id ${req.params.id}`);
             res.render('post', { posts: []});
+        } else {
+            console.log(`Blog found matching _id ${req.params.id}`);
+            res.render('post', { posts: [blogs]});
         }
     });
 });
 
+/**
+ * Search blogs containing given test string in the Title or Tags
+ */
 app.post('/search', (req, res) => {
     // TODO - sort by date, ratings & review
-    // mongoose.connect(mongoDB, {useNewUrlParser: true});
-    console.log("req.params.searchText: "+req.params.searchText);
-    Blog.find({title: _.lowerCase(req.params.searchText)}, (err, blogs) => {
-        if(err) {
-            console.log('Some error occurred: ' + err)
-            res.render('post', {posts: []});
-        } else {
-            // mongoose.connection.close();
-            console.log(blogs.length + ' Blog found matching criteria ');
-            res.render('home', { posts: blogs});
-        }
-    });
+    const searchText = req.body.searchText;
+    if(_.trim(searchText) === '') {
+        res.redirect('/');
+    } else {
+    Blog.find(
+        {
+            title: searchText
+            // _.lowerCase(title): _.lowerCase(req.body.searchText)
+        }, 
+        (err, blogs) => {
+            if(err) {
+                console.log(`Some error occurred: ${err}`);
+                res.render('home', { posts: [], searchText: searchText, displaySomeMessage: `Some error occurred: ${err}`});
+            } else if (blogs === null || blogs.length === 0) {
+                console.log(`No blog found matching criteria: ${searchText}`);
+                res.render('home', { posts: [], searchText: searchText, displaySomeMessage: `No blog found matching criteria`});
+            } else {
+                console.log(`Blog found matching criteria: ${searchText}`);
+                if(blogs.length === 'undefined') {
+                    console.log('One blog found');
+                    res.render('home', { posts: [blogs], searchText: searchText, displaySomeMessage: 'One blog found'});
+                } else {
+                    console.log(`Array of ${blogs.length} blogs found`);
+                    res.render('home', { posts: blogs, searchText: searchText, displaySomeMessage: `${blogs.length} blogs found`});
+                }
+            }
+        });
+    }
 });
 
+/**
+ * Deletes a blog for given matching _id, maximum "one" blog deleted.
+ */
 app.post('/remove', (req, res) => {
-    Blog.deleteOne({_id: req.params.postId}, (err, blogs) => {
+    Blog.deleteOne({_id: req.params.id}, (err, blogs) => {
         res.redirect('/');
     });
 });

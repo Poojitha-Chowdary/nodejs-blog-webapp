@@ -1,13 +1,12 @@
 <%- include('partials/header'); -%>
 <br/>
 <a href="/"> << Go back home</a>
-
 <% posts.forEach(function(post) { %>
 
     <% if (post.title === '') { %>
         <div class="blogTitle">No data found!</div>
     <% } else { %>
-        <div class="blogTitle">
+        <div class="blogTitle blogHeader">
             <%= post.title %>
             <% 
             const ratingAmount = 3;
@@ -72,6 +71,7 @@
         <% } %>
 
     <% } %>
+
 <% }); %>
 
 <!-- <h1><%= posts.title %></h1>

@@ -55,6 +55,13 @@ html {
     font-weight: normal !important;
     font-size: medium !important;
 }
+.blog table tr :hover {
+    background: wheat;
+}
+div .blogHeader {
+    margin-bottom: 40px;
+    background-color: wheat;
+}
 .ratingAmount {
     margin-left: 10px;
 }

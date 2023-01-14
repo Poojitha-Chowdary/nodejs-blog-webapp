@@ -2,32 +2,57 @@
 
 <h1>Recent Articles</h1>
 
-<form action="/search" method="post" class="">
+<div>
+<form action="/search" method="post">
     <div class="form-group">
-        <input type="text" name="searchText" class="form-control" placeholder="Type text and hit Enter to Search">
+        <div class="input-group">
+            <input type="text" name="searchText" value="<%=searchText%>" class="form-control" placeholder="Type search text and hit Search button">
+            <span class="input-group-btn">
+                <button type="submit" name="button" class="btn btn-primary">Search</button>
+            </span>
+        </div>
     </div>
 </form>
+</div>
 
-<% if (posts !== null || posts.length !== 0) {
-    posts.forEach(function(element) { %>
-    <div class="blogTitle"><%= element.title %>
-        <% 
-        const ratingAmount = 3;
-        for (let i=0; i < ratingAmount; i++) { %>
-            <span class="starRating">★</span>
-        <% } 
-        for (let i=0; i < 5 - ratingAmount; i++) { %>
-            <span class="starRating">☆</span>
-        <% } %>
-        <span><b><%= element.timestamp %></b></span>
-        <span>Posted by <b><%= element.author %></b> on </span>
-    </div>
-    <div class="blogContent">
-    <!-- <p> -->
-        <%= element.content.substring(0, 125); %>
-        <a href="/posts/<%= element.id %>">...read more</a>
-    <!-- </p> -->
-    </div>
-<% }); } %>
+<div class="alert alert-success fade in alert-dismissible" style="margin-top: 20px; font-size: larger;">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">&times;</a>
+    <strong><%= displaySomeMessage %></strong>
+</div>
+
+<div class="blog">
+<table class="table table-striped table-borderless">
+<tbody>
+    
+    <% if (posts !== null || posts.length !== 0) { %>
+    <% posts.forEach(function(element) { %>
+        <tr><td>
+            <div>
+                <div class="blogTitle"><%= element.title %>
+                    <% 
+                    const ratingAmount = 3;
+                    for (let i=0; i < ratingAmount; i++) { %>
+                        <span class="starRating">★</span>
+                    <% } 
+                    for (let i=0; i < 5 - ratingAmount; i++) { %>
+                        <span class="starRating">☆</span>
+                    <% } %>
+                    <span><b><%= element.timestamp %></b></span>
+                    <span>Posted by <b><%= element.author %></b> on </span>
+                </div>
+                <div class="blogContent">
+                <!-- <p> -->
+                    <%= element.content.substring(0, 125); %>
+                    <a href="/posts/<%= element.id %>">...read more</a>
+                <!-- </p> -->
+                </div>
+            </div>
+        </td></tr>
+    <% }); %>
+    <% } %>
+
+</tbody>
+</table>
+</div>
 
 <%- include('partials/footer'); -%>
