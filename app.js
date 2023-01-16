@@ -1,15 +1,53 @@
 // jshint esversion:6
 
+const express = require('express');
+const bodyParser = require("body-parser");
+const ejs = require('ejs');
+
+const app = express();
+
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(express.static('public'));
+
 const _ = require('lodash');
 const moment = require('moment');
-const { host, port, mongo_db_url, blogs_db_name } = require('./configs/config.json');
+
+const { host, port, cloud_db_username, cloud_db_password, cloud_db_server, blogs_db_name } = require('./configs/config.json');
 const path = require('path');
 const assert = require('assert');
 
 // Set up mongoose connection for MongoDB
 const mongoose = require('mongoose');
-const dev_db_url = `${mongo_db_url}/${blogs_db_name}`;
+
+// for PROD MongoDB:
+const fs = require('fs');
+const credentials = './certs/mongo-superuser-X509-cert.pem';
+const prod_db_uri = `mongodb+srv://${cloud_db_server}/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority`;
+let prod_db_uri_cert;
+fs.readFile(credentials, (err, fileData) => {
+    if(err) {
+        console.log('some error while reading certificate file: '+err);
+        // TODO: exit the server in this case
+    } else {
+        prod_db_uri_cert = {
+            sslKey: fileData,
+            sslCert: fileData,
+            useNewUrlParser: true
+        };
+    }
+});
+
+// for Dev localhost MongoDB:
+const local_db_url = `mongodb://localhost:2701/${blogs_db_name}`;
+
+// for Dev Cloud server MongoDB:
+const dev_db_url = `mongodb+srv://${cloud_db_username}:${cloud_db_password}@${cloud_db_server}/${blogs_db_name}`;
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
+
+mongoose.connect(mongoDB, {useNewUrlParser: true});
+// mongoose.connect(prod_db_uri, prod_db_uri_cert);
+// mongoose.connection.close();
 
 const dummyReviewData = [
     { author: 'Rahul', rating: 4, comment: "This is a great article. The level of author's research is worth appreciation", approval: 'approved' },
@@ -31,7 +69,7 @@ const reviewSchema = {
     }
 };
 const relatedPostSchema = {
-    relationId: Number
+    relationId: String
 };
 const postSchema = {
     title: {
@@ -66,23 +104,15 @@ const postSchema = {
 };
 const blogSchema = new mongoose.Schema(postSchema);
 const Blog = mongoose.model('Blog', blogSchema);
-mongoose.connect(mongoDB, {useNewUrlParser: true});
-// mongoose.connection.close();
 
-const express = require('express');
-const bodyParser = require("body-parser");
-const ejs = require('ejs');
-
-const app = express();
-
-app.set('view engine', 'ejs');
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.static('public'));
 
 let displaySomeMessage = '';
 
 app.get('/', (req, res) => {
-    Blog.find((err, blogs) => {
+    Blog.find(
+        {
+            status: { $ne: 'deleted' }
+        }, (err, blogs) => {
         if(err) {
             console.log(`Some error occurred while finding: ${err}`)
             res.render('home', {posts: [], searchText: '', displaySomeMessage: `Some error occurred while finding: ${err}`});
@@ -90,7 +120,7 @@ app.get('/', (req, res) => {
             console.log(`${blogs.length} blog(s) found (Home page).`)
             res.render('home', {posts: blogs, searchText: '', displaySomeMessage: `${blogs.length} blog(s) found`});
         }
-    });
+    }).sort({timestamp: 'desc'});
 });
 
 app.get('/about', (req, res) => {
@@ -107,6 +137,8 @@ app.get('/compose', (req, res) => {
 
 app.post('/compose', (req, res) => {
     // mongoose.connect(mongoDB, {useNewUrlParser: true});
+    relatedPosts = ( req.body.relatedPosts === '' ? [] : [req.body.relatedPosts] );
+
     const blog = new Blog({
         title: req.body.postTitle, 
         content: req.body.postData, 
@@ -114,10 +146,15 @@ app.post('/compose', (req, res) => {
         contentSource: req.body.contentSource, 
         timestamp: moment(new Date()).format('llll'),
         overallRating: 2, // 0 means no ratings available
-        tags: 'blockchain,technology', 
-        relatedPosts: [], 
+        tags: req.body.tags, 
+        relatedPosts: relatedPosts, 
         reviews: dummyReviewData
     });
+
+    blog.save().then(
+        () => {console.log('Blog created: ' + req.body.postTitle);}
+    );
+
     // const id = Blog.bulkSave([ blog ], (err) => {
     //     if(err) {
     //         console.log('Some error occurred while saving: ' + err);
@@ -126,19 +163,16 @@ app.post('/compose', (req, res) => {
     //         console.log('Blog created: ' + req.body.postTitle);
     //     }
     // });
-    const innerDoc = blog.save().then(
-        () => {console.log('Blog created: ' + req.body.postTitle);}
-    );
-    console.log('innerDoc._id:   '+innerDoc._id);
 
-    Blog.updateOne({_id: innerDoc._id}, {reviews: dummyReviewData}, (err) => {
-        if(err) {
-            console.log('Some error occurred while updating reviews. ' + err);
-        } else {
-            // mongoose.connection.close();
-            console.log('Blog updated with reviews.');
-        }
-    });
+    // const savedDoc = {};
+    // console.log('savedDoc:   ' + savedDoc);
+    // Blog.updateOne({_id: savedDoc._id}, {reviews: dummyReviewData}, (err) => {
+    //     if(err) {
+    //         console.log('Some error occurred while updating reviews. ' + err);
+    //     } else {
+    //         console.log('Blog updated with reviews.');
+    //     }
+    // });
 
     res.redirect('/');
 });
@@ -147,7 +181,11 @@ app.post('/compose', (req, res) => {
  * Search blog matching given _id, maximum "one" blog retrieved.
  */
 app.get('/posts/:id', (req, res) => {
-    Blog.findOne({_id: req.params.id}, (err, blogs) => {
+    Blog.findOne(
+        {
+            _id: req.params.id, 
+            status: { $ne: 'deleted' }
+        }, (err, blogs) => {
         if(err) {
             console.log(`Some error occurred: ${err}`);
             res.render('post', { posts: []});
@@ -165,19 +203,20 @@ app.get('/posts/:id', (req, res) => {
  * Search blogs containing given test string in the Title or Tags
  */
 app.post('/search', (req, res) => {
-    // TODO - sort by date, ratings & review
     const searchText = req.body.searchText;
+
     if(_.trim(searchText) === '') {
         res.redirect('/');
     } else {
-    Blog.find(
+        Blog.find(
         {
-            title: searchText
+            title: searchText, 
+            status: { $ne: 'deleted' }
             // _.lowerCase(title): _.lowerCase(req.body.searchText)
         }, 
         (err, blogs) => {
             if(err) {
-                console.log(`Some error occurred: ${err}`);
+                console.log(`Some error occurred while searching: ${err}`);
                 res.render('home', { posts: [], searchText: searchText, displaySomeMessage: `Some error occurred: ${err}`});
             } else if (blogs === null || blogs.length === 0) {
                 console.log(`No blog found matching criteria: ${searchText}`);
@@ -192,7 +231,10 @@ app.post('/search', (req, res) => {
                     res.render('home', { posts: blogs, searchText: searchText, displaySomeMessage: `${blogs.length} blogs found`});
                 }
             }
-        });
+        })
+        .sort({timestamp: 'desc'})
+        .limit(25)
+        .setOptions({ maxTimeMS: 1000 });
     }
 });
 
@@ -200,10 +242,38 @@ app.post('/search', (req, res) => {
  * Deletes a blog for given matching _id, maximum "one" blog deleted.
  */
 app.post('/remove', (req, res) => {
-    Blog.deleteOne({_id: req.params.id}, (err, blogs) => {
+    // method-1
+    // Blog.findByIdAndRemove(req.body.id, function(err) {
+    //     if(err) {
+    //         console.log(`Some error occurred while deleting: ${err}`);
+    //     } else {
+    //         console.log(`Successfully deleted ID ${req.body.id}`);
+    //     }
+    //     res.redirect('/');
+    // });
+
+    // method-2
+    // Blog.deleteOne({_id: req.body.id}, (err, blogs) => {
+    //     if(err) {
+    //         console.log(`Some error occurred while deleting: ${err}`);
+    //     } else {
+    //         console.log(`Successfully deleted ID ${req.body.id}`);
+    //     }
+    //     res.redirect('/');
+    // });
+
+    // method-3 (mark Blog status as deleted)
+    // TODO : this is NOT working
+    Blog.findOneAndUpdate({_id: req.body.id}, {'status': 'deleted'}, function(err, foundItem) {
+        if(err) {
+            console.log(`Some error occurred while deleting: ${err}`);
+        } else {
+            console.log(`Blog marked as deleted for ID ${foundItem._id}`);
+        }
         res.redirect('/');
     });
 });
+
 /**
  * Spin NodeJS web server on port 3000
  */

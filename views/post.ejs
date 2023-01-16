@@ -16,8 +16,10 @@
             for (let i=0; i < 5 - ratingAmount; i++) { %>
                 <span class="starRating">☆</span>
             <% } %>
-            <span><b><%= post.timestamp %></b></span>
-            <span>Posted by <b><%= post.author %></b> on </span>
+            <div>
+                <span>Posted by <b><%= post.author %></b> on </span>
+                <span><b><%= post.timestamp %></b></span>
+            </div>
         </div>
         <div class="blogContent">
             <%= post.content; %>
@@ -33,12 +35,24 @@
             Sourced from (citations): <%= post.contentSource %>
         </div>
         <div class="contentSource">
-            <% if(post.tags || post.tags == null || post.tags === '') { %>
+            Tags: 
+            <% if(post.tags === null || post.tags === '') { %>
                 No tags!
             <% } else { %>
                 <%= post.tags %>
             <% } %>
         </div>
+        <div class="contentSource">
+            Related Posts:
+            <% if(post.relatedPosts === null || post.relatedPosts === '' || post.relatedPosts.length === 0) { %>
+                No related posts!
+            <% } else { %>
+                <%= post.relatedPosts %>
+            <% } %>
+        </div>
+        <form action="/remove" method="post">
+            <button type="submit" name="id" value="<%= post._id %>" class="btn btn-primary">Purge</button>
+        </form>
         <div class="blogTitle">
             Reviews
         </div>

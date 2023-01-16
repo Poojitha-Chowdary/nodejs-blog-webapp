@@ -2,8 +2,9 @@
     "host": "localhost",
     "port": 3000,
 
-    "mongo_db_url": "mongodb://localhost:27017",
-    "mongo_db_url2": "mongodb+srv://myUserName:MyPassword@ElasticIP:27017/databaseName?retryWrites=true&w=majority&authSource=admin",
+    "cloud_db_username": "superuser",
+    "cloud_db_password": "UkhV68vzMXmlidXF",
+    "cloud_db_server": "cluster0.3tmamwb.mongodb.net",
     "blogs_db_name": "BlogsDb"
 
 }
