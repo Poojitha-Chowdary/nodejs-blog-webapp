@@ -27,27 +27,26 @@
     <% if (posts !== null || posts.length !== 0) { %>
     <% posts.forEach(function(element) { %>
         <tr><td>
-            <div>
-                <div class="blogTitle"><%= element.title %>
-                    <% 
-                    const ratingAmount = 3;
-                    for (let i=0; i < ratingAmount; i++) { %>
-                        <span class="starRating">★</span>
-                    <% } 
-                    for (let i=0; i < 5 - ratingAmount; i++) { %>
-                        <span class="starRating">☆</span>
-                    <% } %>
-                    <span><b><%= element.timestamp %></b></span>
-                    <span>Posted by <b><%= element.author %></b> on </span>
-                </div>
-                <div class="blogContent">
-                <!-- <p> -->
-                    <%= element.content.substring(0, 125); %>
-                    <a href="/posts/<%= element.id %>">...read more</a>
-                <!-- </p> -->
-                </div>
+            <div class="blogHomeTitle">
+                <%= element.title %>
+                <% 
+                const ratingAmount = 3;
+                for (let i=0; i < ratingAmount; i++) { %>
+                    <span class="starRating">★</span>
+                <% } 
+                for (let i=0; i < 5 - ratingAmount; i++) { %>
+                    <span class="starRating">☆</span>
+                <% } %>
             </div>
-        </td></tr>
+            <div>
+                <span>Posted by <b><%= element.author %></b> on </span>
+                <span><b><%= element.timestamp %></b></span>
+            </div>
+            <div class="blogHomeContent">
+                <%= element.content.substring(0, 140); %>
+                <a href="/posts/<%= element.id %>">...read more</a>
+            </div>
+    </td></tr>
     <% }); %>
     <% } %>
 

@@ -1,3 +1,6 @@
+# Temporary degugger file
+data.cpuprofile
+
 # Logs
 logs
 *.log

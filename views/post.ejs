@@ -8,47 +8,56 @@
     <% } else { %>
         <div class="blogTitle blogHeader">
             <%= post.title %>
-            <% 
-            const ratingAmount = 3;
-            for (let i=0; i < ratingAmount; i++) { %>
+            <%
+            let rating = 0;
+            if(post.overallRating !== '' && post.overallRating !== 0) {
+                rating = post.overallRating;
+            }
+            for (let i=0; i < rating; i++) { 
+            %>
                 <span class="starRating">★</span>
-            <% } 
-            for (let i=0; i < 5 - ratingAmount; i++) { %>
+            <%
+            } 
+            for (let i=0; i < 5 - rating; i++) {
+            %>
                 <span class="starRating">☆</span>
             <% } %>
-            <div>
-                <span>Posted by <b><%= post.author %></b> on </span>
-                <span><b><%= post.timestamp %></b></span>
-            </div>
+        </div>
+        <div>
+            <span>Posted by <b><%= post.author %></b> on </span>
+            <span><b><%= post.timestamp %></b></span>
         </div>
         <div class="blogContent">
             <%= post.content; %>
         </div>
-        <div class="contentSource">Overall rating: 
-            <% if(post.overallRating === '' || post.overallRating === 0) { %>
-                No ratings available!
-            <% } else { %>
-                <%= post.overallRating %>
-            <% } %>
-        </div>
-        <div class="contentSource">
-            Sourced from (citations): <%= post.contentSource %>
-        </div>
-        <div class="contentSource">
-            Tags: 
-            <% if(post.tags === null || post.tags === '') { %>
-                No tags!
-            <% } else { %>
-                <%= post.tags %>
-            <% } %>
-        </div>
-        <div class="contentSource">
-            Related Posts:
-            <% if(post.relatedPosts === null || post.relatedPosts === '' || post.relatedPosts.length === 0) { %>
-                No related posts!
-            <% } else { %>
-                <%= post.relatedPosts %>
-            <% } %>
+        <div class="blogContentTags">
+            <div>
+                Category: 
+                <% if(post.category === null || post.category === '') { %>
+                    No category defined!
+                <% } else { %>
+                    <%= post.category %>
+                <% } %>
+            </div>
+            <div>
+                Tags: 
+                <% if(post.tags === null || post.tags === '') { %>
+                    No tags!
+                <% } else { %>
+                    <%= post.tags %>
+                <% } %>
+            </div>
+            <div>
+                Source and citations: <%= post.contentSource %>
+            </div>
+            <div>
+                Related Posts:
+                <% if(post.relatedPosts === null || post.relatedPosts === '' || post.relatedPosts.length === 0) { %>
+                    No related posts!
+                <% } else { %>
+                    <%= post.relatedPosts %>
+                <% } %>
+            </div>
         </div>
         <form action="/remove" method="post">
             <button type="submit" name="id" value="<%= post._id %>" class="btn btn-primary">Purge</button>
@@ -57,38 +66,40 @@
             Reviews
         </div>
         
-        <% if (post.reviews != null && post.reviews.length != 0) { %>
-            <% post.reviews.forEach( function(review) { %>
-                <% if(review.approval ==='approved') { %>
-                    <div class="blogContent">
+        <div class="blogContent">
+        <%
+        if (post.reviews != null && post.reviews.length != 0) {
+            post.reviews.forEach( function(review) {
+                if(review.approval ==='approved') { 
+        %>
+                    <div><%= review.comment %></div>
+                    <div>
                         <span><%= review.author %></span>
                         <% for(let i=0; i < review.rating; i++) { %>
                             <span class="starRating">★</span>
-                        <% } 
-                        for (let i=0; i < 5 - review.rating; i++) { %>
+                        <% } %>
+                        <% for (let i=0; i < 5 - review.rating; i++) { %>
                             <span class="starRating">☆</span>
                         <% } %>
-                        <div><%= review.comment %></div>
-                        <br/>
+                        <br/><br/>
                     </div>
-                <% } else {%>
-                    <div class="blogContent">
-                        Review hidden (yet to be published).
+                <% } else { %>
+                    <div>
+                        Review hidden (yet to be published)
+                        <br/><br/>
                     </div>
-                    <br/>
-                <% }%>
+                <% } %>
             <% }); %>
         <% } else { %>
-            <div class="blogContent">
+            <div>
                 No reviews available.
+                <br/><br/>
             </div>
         <% } %>
+        </div>
 
     <% } %>
 
 <% }); %>
-
-<!-- <h1><%= posts.title %></h1>
-<p><%= posts.content %></p> -->
 
 <%- include('partials/footer'); -%>

@@ -13,6 +13,20 @@ app.use(express.static('public'));
 const _ = require('lodash');
 const moment = require('moment');
 
+const fs = require('fs');
+
+// Debugging with DevTools inspector
+const inspector = require('inspector');
+const session = new inspector.Session();
+session.connect();
+session.post('Profiler.enable');
+session.post('Profiler.start');
+setTimeout(_ => {
+    session.post('Profiler.stop', (err, data) => {
+        fs.writeFileSync('data.cpuprofile', JSON.stringify(data.profile));
+    });
+}, 3000);
+
 const { host, port, cloud_db_username, cloud_db_password, cloud_db_server, blogs_db_name } = require('./configs/config.json');
 const path = require('path');
 const assert = require('assert');
@@ -21,16 +35,15 @@ const assert = require('assert');
 const mongoose = require('mongoose');
 
 // for PROD MongoDB:
-const fs = require('fs');
-const credentials = './certs/mongo-superuser-X509-cert.pem';
-const prod_db_uri = `mongodb+srv://${cloud_db_server}/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority`;
-let prod_db_uri_cert;
-fs.readFile(credentials, (err, fileData) => {
+const credential_file = './certs/mongo-superuser-X509-cert.pem';
+const dev_db_uri = `mongodb+srv://${cloud_db_server}/?authSource=%24external&authMechanism=MONGODB-X509&retryWrites=true&w=majority`;
+let dev_db_uri_cert;
+fs.readFile(credential_file, (err, fileData) => {
     if(err) {
-        console.log('some error while reading certificate file: '+err);
+        console.log('Some error while reading DB certificate file: '+err);
         // TODO: exit the server in this case
     } else {
-        prod_db_uri_cert = {
+        dev_db_uri_cert = {
             sslKey: fileData,
             sslCert: fileData,
             useNewUrlParser: true
@@ -45,7 +58,13 @@ const local_db_url = `mongodb://localhost:2701/${blogs_db_name}`;
 const dev_db_url = `mongodb+srv://${cloud_db_username}:${cloud_db_password}@${cloud_db_server}/${blogs_db_name}`;
 const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
-mongoose.connect(mongoDB, {useNewUrlParser: true});
+mongoose.connect(mongoDB, {useNewUrlParser: true}, (err) => {
+    if(err) {
+        console.log(`Database connection error:: ${err}`);
+    } else {
+        console.log('Database connected successfully');
+    }
+});
 // mongoose.connect(prod_db_uri, prod_db_uri_cert);
 // mongoose.connection.close();
 
@@ -145,7 +164,7 @@ app.post('/compose', (req, res) => {
         author: req.body.author, 
         contentSource: req.body.contentSource, 
         timestamp: moment(new Date()).format('llll'),
-        overallRating: 2, // 0 means no ratings available
+        overallRating: 0, // 0 means no ratings available
         tags: req.body.tags, 
         relatedPosts: relatedPosts, 
         reviews: dummyReviewData
