@@ -1,0 +1,70 @@
+<%- include('partials/header'); -%>
+
+<!-- <h1>Recent Articles</h1> -->
+<div class="composeBlog">
+    Recent Articles
+    <span>
+        <form action="/blog/myblogs" method="get">
+            <button type="submit" class="btn btn-primary">My Blogs</button>
+        </form>
+    </span>
+    <span>
+        <form action="/blog/compose" method="get">
+            <button type="submit" class="btn btn-primary">Compose</button>
+        </form>
+    </span>
+</div>
+
+<div>
+<form action="/blogs/search" method="post">
+    <div class="form-group">
+        <div class="input-group">
+            <input type="text" name="searchText" value="<%=searchText%>" class="form-control" placeholder="Type search text and hit Search button">
+            <span class="input-group-btn">
+                <button type="submit" name="button" class="btn btn-primary"> > </button>
+            </span>
+        </div>
+    </div>
+</form>
+</div>
+
+<div class="alert alert-success fade in alert-dismissible" style="margin-top: 20px; font-size: larger;">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">&times;</a>
+    <strong><%= displaySomeMessage %></strong>
+</div>
+
+<div class="blog">
+<table class="table table-striped table-borderless">
+<tbody>
+    
+    <% if (posts !== null || posts.length !== 0) { %>
+    <% posts.forEach(function(element) { %>
+        <tr><td>
+            <div class="blogHomeTitle">
+                <%= element.title %>
+                <% 
+                const ratingAmount = 3;
+                for (let i=0; i < ratingAmount; i++) { %>
+                    <span class="starRating">★</span>
+                <% } 
+                for (let i=0; i < 5 - ratingAmount; i++) { %>
+                    <span class="starRating">☆</span>
+                <% } %>
+            </div>
+            <div>
+                <span>Posted by <b><%= element.author %></b> on </span>
+                <span><b><%= element.timestamp %></b></span>
+            </div>
+            <div class="blogHomeContent">
+                <%= element.content.substring(0, 135); %>
+                <a href="/blog/<%= element.id %>">...read more</a>
+            </div>
+    </td></tr>
+    <% }); %>
+    <% } %>
+
+</tbody>
+</table>
+</div>
+
+<%- include('partials/footer'); -%>

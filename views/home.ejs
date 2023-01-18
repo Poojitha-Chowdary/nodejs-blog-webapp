@@ -1,57 +1,11 @@
 <%- include('partials/header'); -%>
 
-<h1>Recent Articles</h1>
+<h1>Dashboard</h1>
 
-<div>
-<form action="/search" method="post">
-    <div class="form-group">
-        <div class="input-group">
-            <input type="text" name="searchText" value="<%=searchText%>" class="form-control" placeholder="Type search text and hit Search button">
-            <span class="input-group-btn">
-                <button type="submit" name="button" class="btn btn-primary">Search</button>
-            </span>
-        </div>
-    </div>
-</form>
-</div>
+<div>There are total 10000000 blogs from 10000 users.</div>
 
-<div class="alert alert-success fade in alert-dismissible" style="margin-top: 20px; font-size: larger;">
-    <a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">&times;</a>
-    <strong><%= displaySomeMessage %></strong>
-</div>
+<div>You have 5 notes.</div>
 
-<div class="blog">
-<table class="table table-striped table-borderless">
-<tbody>
-    
-    <% if (posts !== null || posts.length !== 0) { %>
-    <% posts.forEach(function(element) { %>
-        <tr><td>
-            <div class="blogHomeTitle">
-                <%= element.title %>
-                <% 
-                const ratingAmount = 3;
-                for (let i=0; i < ratingAmount; i++) { %>
-                    <span class="starRating">★</span>
-                <% } 
-                for (let i=0; i < 5 - ratingAmount; i++) { %>
-                    <span class="starRating">☆</span>
-                <% } %>
-            </div>
-            <div>
-                <span>Posted by <b><%= element.author %></b> on </span>
-                <span><b><%= element.timestamp %></b></span>
-            </div>
-            <div class="blogHomeContent">
-                <%= element.content.substring(0, 140); %>
-                <a href="/posts/<%= element.id %>">...read more</a>
-            </div>
-    </td></tr>
-    <% }); %>
-    <% } %>
-
-</tbody>
-</table>
-</div>
+<div>You have 5 Tasks due this week, and 3 next week.</div>
 
 <%- include('partials/footer'); -%>

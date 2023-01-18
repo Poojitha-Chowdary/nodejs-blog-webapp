@@ -128,34 +128,52 @@ const Blog = mongoose.model('Blog', blogSchema);
 let displaySomeMessage = '';
 
 app.get('/', (req, res) => {
+    res.render('home');
+});
+
+app.get('/blogs', (req, res) => {
     Blog.find(
         {
             status: { $ne: 'deleted' }
         }, (err, blogs) => {
         if(err) {
             console.log(`Some error occurred while finding: ${err}`)
-            res.render('home', {posts: [], searchText: '', displaySomeMessage: `Some error occurred while finding: ${err}`});
+            res.render('blogs', {posts: [], searchText: '', displaySomeMessage: `Some error occurred while finding: ${err}`});
         } else {
-            console.log(`${blogs.length} blog(s) found (Home page).`)
-            res.render('home', {posts: blogs, searchText: '', displaySomeMessage: `${blogs.length} blog(s) found`});
+            console.log(`${blogs.length} blog(s) found (Blogs page).`)
+            res.render('blogs', {posts: blogs, searchText: '', displaySomeMessage: `${blogs.length} blog(s) found`});
         }
     }).sort({timestamp: 'desc'});
 });
 
+app.get('/notepad', (req, res) => {
+    res.render('notepad');
+});
+
+app.get('/notepad/compose', (req, res) => {
+    res.render('composeNotepad');
+});
+
+app.get('/todo', (req, res) => {
+    res.render('todo');
+});
+
+app.get('/todo/compose', (req, res) => {
+    res.render('composeTodo');
+});
+
 app.get('/about', (req, res) => {
-    res.render('about', {aboutContent: 'This web portal is about Blog posts'});
+    res.render('about', {
+        aboutContent: 'This web portal is about Blog posts', 
+        contactContent: 'Contact Ajay on amalik007@gmail.com or +1 (306) 361 4491'
+    });
 });
 
-app.get('/contact', (req, res) => {
-    res.render('contact', {contactContent: 'Contact Ajay on amalik007@gmail.com or +1 (306) 361 4491'});
+app.get('/blog/compose', (req, res) => {
+    res.render('composeBlog');
 });
 
-app.get('/compose', (req, res) => {
-    res.render('compose');
-});
-
-app.post('/compose', (req, res) => {
-    // mongoose.connect(mongoDB, {useNewUrlParser: true});
+app.post('/blog/compose', (req, res) => {
     relatedPosts = ( req.body.relatedPosts === '' ? [] : [req.body.relatedPosts] );
 
     const blog = new Blog({
@@ -193,13 +211,13 @@ app.post('/compose', (req, res) => {
     //     }
     // });
 
-    res.redirect('/');
+    res.redirect('/blogs');
 });
 
 /**
  * Search blog matching given _id, maximum "one" blog retrieved.
  */
-app.get('/posts/:id', (req, res) => {
+app.get('/blog/:id', (req, res) => {
     Blog.findOne(
         {
             _id: req.params.id, 
@@ -207,13 +225,13 @@ app.get('/posts/:id', (req, res) => {
         }, (err, blogs) => {
         if(err) {
             console.log(`Some error occurred: ${err}`);
-            res.render('post', { posts: []});
+            res.render('blogDetails', { posts: []});
         } else if(blogs === null) {
             console.log(`No blog found matching _id ${req.params.id}`);
-            res.render('post', { posts: []});
+            res.render('blogDetails', { posts: []});
         } else {
             console.log(`Blog found matching _id ${req.params.id}`);
-            res.render('post', { posts: [blogs]});
+            res.render('blogDetails', { posts: [blogs]});
         }
     });
 });
@@ -221,11 +239,11 @@ app.get('/posts/:id', (req, res) => {
 /**
  * Search blogs containing given test string in the Title or Tags
  */
-app.post('/search', (req, res) => {
+app.post('/blogs/search', (req, res) => {
     const searchText = req.body.searchText;
 
     if(_.trim(searchText) === '') {
-        res.redirect('/');
+        res.redirect('/blogs');
     } else {
         Blog.find(
         {
@@ -236,18 +254,18 @@ app.post('/search', (req, res) => {
         (err, blogs) => {
             if(err) {
                 console.log(`Some error occurred while searching: ${err}`);
-                res.render('home', { posts: [], searchText: searchText, displaySomeMessage: `Some error occurred: ${err}`});
+                res.render('blogs', { posts: [], searchText: searchText, displaySomeMessage: `Some error occurred: ${err}`});
             } else if (blogs === null || blogs.length === 0) {
                 console.log(`No blog found matching criteria: ${searchText}`);
-                res.render('home', { posts: [], searchText: searchText, displaySomeMessage: `No blog found matching criteria`});
+                res.render('blogs', { posts: [], searchText: searchText, displaySomeMessage: `No blog found matching criteria`});
             } else {
                 console.log(`Blog found matching criteria: ${searchText}`);
                 if(blogs.length === 'undefined') {
                     console.log('One blog found');
-                    res.render('home', { posts: [blogs], searchText: searchText, displaySomeMessage: 'One blog found'});
+                    res.render('blogs', { posts: [blogs], searchText: searchText, displaySomeMessage: 'One blog found'});
                 } else {
                     console.log(`Array of ${blogs.length} blogs found`);
-                    res.render('home', { posts: blogs, searchText: searchText, displaySomeMessage: `${blogs.length} blogs found`});
+                    res.render('blogs', { posts: blogs, searchText: searchText, displaySomeMessage: `${blogs.length} blogs found`});
                 }
             }
         })

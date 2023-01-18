@@ -32,6 +32,14 @@
         </div>
         <div class="blogContentTags">
             <div>
+                Public: 
+                <% if(post.public === 'no') { %>
+                    No
+                <% } else { %>
+                    Yes
+                <% } %>
+            </div>
+            <div>
                 Category: 
                 <% if(post.category === null || post.category === '') { %>
                     No category defined!

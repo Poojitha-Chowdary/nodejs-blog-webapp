@@ -34,6 +34,16 @@ html {
     font-size: 18px;
     color: #fff;
 }
+.composeBlog {
+    font-size: xx-large;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.composeBlog span {
+    float: right;
+    margin-left: 50px;
+}
 .blogHomeTitle {
     margin-bottom: 12px;
     font-size: xx-large;
