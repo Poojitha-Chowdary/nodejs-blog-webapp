@@ -147,19 +147,19 @@ app.get('/blogs', (req, res) => {
 });
 
 app.get('/notepad', (req, res) => {
-    res.render('notepad');
+    res.render('notepad', {notes: [], searchText: '', displaySomeMessage: 'You have yet to create your first note!'});
 });
 
 app.get('/notepad/compose', (req, res) => {
-    res.render('composeNotepad');
+    res.render('newNotepad');
 });
 
 app.get('/todo', (req, res) => {
-    res.render('todo');
+    res.render('todo', {todo: [], searchText: '', displaySomeMessage: 'You have yet to create your first task!'});
 });
 
 app.get('/todo/compose', (req, res) => {
-    res.render('composeTodo');
+    res.render('newTodo');
 });
 
 app.get('/about', (req, res) => {
@@ -170,7 +170,7 @@ app.get('/about', (req, res) => {
 });
 
 app.get('/blog/compose', (req, res) => {
-    res.render('composeBlog');
+    res.render('newBlog');
 });
 
 app.post('/blog/compose', (req, res) => {

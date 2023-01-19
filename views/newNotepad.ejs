@@ -1,8 +1,13 @@
 <%- include('partials/header'); -%>
 
-<h1>Edit Notepad</h1>
+<h1>Create New Notepad</h1>
 
-<form action="/notepad/compose" method="post">
+<form action="/notepad/compose" method="get">
+    <label class="auto-save-switch">
+        <input type="checkbox">
+        <span class="slider round">Auto Save</span>
+    </label>
+
     <div class="form-group">
         <label for="postTitle">Subject</label>
         <input type="text" name="subject" class="form-control" placeholder="Subject">

@@ -88,3 +88,65 @@ div .blogHeader {
     margin-bottom: 20px;
     font-size: small;
 }
+
+/* The switch - the box around the slider */
+.auto-save-switch {
+    margin: 25px;
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 35px;
+}
+/* Hide default HTML checkbox */
+.auto-save-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 25px;
+    width: 25px;
+    left: 5px;
+    top: 5px;
+    bottom: 5px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: orange;
+}
+input:focus + .slider {
+    box-shadow: 0 0 1px orange;
+}  
+input:checked + .slider:before {
+    -webkit-transform: translateX(95px);
+    -ms-transform: translateX(95px);
+    transform: translateX(95px);
+}
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+    width: 130px;
+    text-align: center;
+    padding: 6px;
+    color: white;
+    font-weight: lighter;
+}
+.slider.round:before {
+    border-radius: 50%;
+}
