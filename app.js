@@ -31,6 +31,10 @@ const { host, port, cloud_db_username, cloud_db_password, cloud_db_server, blogs
 const path = require('path');
 const assert = require('assert');
 
+// TinyMCE WYSIWYG editor
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
+
+
 // Set up mongoose connection for MongoDB
 const mongoose = require('mongoose');
 
@@ -178,7 +182,7 @@ app.post('/blog/compose', (req, res) => {
 
     const blog = new Blog({
         title: req.body.postTitle, 
-        content: req.body.postData, 
+        content: req.body.blogData-expressjs-tinymce-app, 
         author: req.body.author, 
         contentSource: req.body.contentSource, 
         timestamp: moment(new Date()).format('llll'),
