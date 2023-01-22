@@ -317,7 +317,10 @@ app.post('/remove', (req, res) => {
 
 /**
  * Spin NodeJS web server on port 3000
+ * Heroku cloud deployment uses random port in "process.port.PORT" environment variable
  */
+
+port = process.port.PORT || port;
 app.listen(port, function() {
 	// host and port are defined in ./modules/config.json and loaded in this file via require module
 	console.log(`Node server started at http://${host}:${port}`);

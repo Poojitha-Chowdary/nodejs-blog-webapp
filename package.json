@@ -16,6 +16,9 @@
     "url": "https://github.com/ajaymalik/nodejs-blog-webapp/issues"
   },
   "homepage": "https://github.com/ajaymalik/nodejs-blog-webapp#readme",
+  "engines": {
+    "node": "18.12.1"
+  },
   "dependencies": {
     "async": "^3.2.4",
     "body-parser": "^1.20.1",
