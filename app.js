@@ -320,7 +320,9 @@ app.post('/remove', (req, res) => {
  * Heroku cloud deployment uses random port in "process.port.PORT" environment variable
  */
 
-port = process.port.PORT || port;
+if (null != process.port.PORT && '' != process.port.PORT) {
+    port = process.port.PORT;
+}
 app.listen(port, function() {
 	// host and port are defined in ./modules/config.json and loaded in this file via require module
 	console.log(`Node server started at http://${host}:${port}`);
