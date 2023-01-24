@@ -29,9 +29,9 @@ setTimeout(_ => {
 
 const { host, port, cloud_db_username, cloud_db_password, cloud_db_server, blogs_db_name } = require('./configs/config.json');
 // Heroku cloud deployment uses random port in "process.port.PORT" environment variable
-let cloudPort = port;
+let herokuPort = port;
 if (process.env.PORT != null && process.env.PORT != "") {
-    cloudPort = process.env.PORT;
+    herokuPort = process.env.PORT;
 }
 
 const path = require('path');
@@ -324,7 +324,7 @@ app.post('/remove', (req, res) => {
 /**
  * Spin NodeJS web server on port 3000
  */
-app.listen(cloudPort, function() {
+app.listen(herokuPort, function() {
 	// host and port are defined in ./modules/config.json and loaded in this file via require module
-	console.log(`Node server started at http://${host}:${cloudPort}`);
+	console.log(`Node server started at http://${host}:${herokuPort}`);
 });

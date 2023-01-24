@@ -1,7 +1,7 @@
 tinymce.init({
     selector: 'textarea#blogData-expressjs-tinymce-app',
     height: 500,
-    menubar: false,
+    menubar: 'file edit view',
     plugins: [
         'a11ychecker','advlist','advcode','advtable','autolink','checklist','export',
         'lists','link','image','charmap','preview','anchor','searchreplace','visualblocks',
