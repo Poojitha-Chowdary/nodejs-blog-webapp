@@ -207,7 +207,7 @@ app.post('/blog/compose', (req, res) => {
 
     const blog = new Blog({
         title: req.body.postTitle, 
-        content: req.body.blogData-expressjs-tinymce-app, 
+        content: 'req.body.blogData-expressjs-tinymce-app', 
         author: req.body.author, 
         contentSource: req.body.contentSource, 
         timestamp: moment(new Date()).format('llll'),
