@@ -1,11 +1,23 @@
 <%- include('partials/header'); -%>
 
-<h1>Dashboard</h1>
+<h1>Welcome</h1>
 
-<div>There are total 10000000 blogs from 10000 users.</div>
+<div class="dashboard">
 
-<div>You have 5 notes.</div>
+<table class="table table-borderless">
+<tbody>
+    <tr><td>
+        <div class="postscount">Blogs: <%= postscount %></div>
+    </td></tr>
+    <tr><td>
+        <div class="postscount">Notes: 0</div>
+    </td></tr>
+    <tr><td>
+        <div class="postscount">Tasks due: 0</div>
+    </td></tr>
+</tbody>
+</table>
 
-<div>You have 5 Tasks due this week, and 3 next week.</div>
+</div>
 
 <%- include('partials/footer'); -%>

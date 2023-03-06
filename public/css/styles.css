@@ -44,6 +44,14 @@ html {
     float: right;
     margin-left: 50px;
 }
+.dashboard {
+    font-size: xx-large;
+    text-align: center;
+    background-color: #abc;
+}
+.dashboard .postscount {
+    padding: 5%;
+}
 .blogHomeTitle {
     margin-bottom: 12px;
     font-size: xx-large;

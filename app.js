@@ -138,7 +138,18 @@ const Blog = mongoose.model('Blog', blogSchema);
 let displaySomeMessage = '';
 
 app.get('/', (req, res) => {
-    res.render('home');
+    Blog.count(
+        {
+            status: { $ne: 'deleted' }
+        }, (err, postscount) => {
+        if(err) {
+            console.log(`Some error occurred while finding: ${err}`)
+            res.render('home', {postscount: 0, displaySomeMessage: `Some error occurred while finding: ${err}`});
+        } else {
+            console.log(`${postscount} blog(s) found (Dashboard page).`)
+            res.render('home', {postscount: postscount, displaySomeMessage: `${postscount} blog(s) found`});
+        }
+    });
 });
 
 app.get('/blogs', (req, res) => {
@@ -160,11 +171,19 @@ app.get('/notepad', (req, res) => {
     res.render('notepad', {notes: [], searchText: '', displaySomeMessage: 'You have yet to create your first note!'});
 });
 
+app.post('/notepad/search', (req, res) => {
+    res.render('notepad', {notes: [], searchText: '', displaySomeMessage: 'You have yet to create your first note!'});
+});
+
 app.get('/notepad/compose', (req, res) => {
     res.render('newNotepad');
 });
 
 app.get('/todo', (req, res) => {
+    res.render('todo', {todo: [], searchText: '', displaySomeMessage: 'You have yet to create your first task!'});
+});
+
+app.post('/todo/search', (req, res) => {
     res.render('todo', {todo: [], searchText: '', displaySomeMessage: 'You have yet to create your first task!'});
 });
 
