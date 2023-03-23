@@ -1,6 +1,6 @@
 /* Requires the Docker Pipeline plugin */
 pipeline {
-    agent { docker { image 'maven:3.9.0-eclipse-temurin-11' } }
+    agent { docker { image 'node:16.17.1-alpine' } }
     stages {
         stage('pre-build') {
             steps {
