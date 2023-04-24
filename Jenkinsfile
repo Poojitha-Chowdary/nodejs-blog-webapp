@@ -1,25 +1,42 @@
-/* Requires the Docker Pipeline plugin */
 pipeline {
     agent any
+
     stages {
-        stage('pre-build') {
+        stage('Checkout') {
             steps {
-                echo 'Pre-Build Stage'
+                checkout scm
             }
         }
-        stage('build') {
+
+        stage('Install dependencies') {
             steps {
-                echo 'Building...'
+                node {
+                    sh 'npm install'
+                }
             }
         }
-        stage('test') {
+
+        stage('Build') {
             steps {
-                echo 'Testing...'
+                node {
+                    sh 'npm run build'
+                }
             }
         }
-        stage('deploy') {
+
+        stage('Test') {
             steps {
-                echo 'Deploying...'
+                node {
+                    sh 'npm run test'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                node {
+                    sh 'npm run deploy'
+                }
             }
         }
     }
